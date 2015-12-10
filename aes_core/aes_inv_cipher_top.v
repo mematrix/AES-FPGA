@@ -107,24 +107,24 @@ reg	[3:0]	dcnt;
 always @(posedge clk)
 	if(!rst)	dcnt <= #1 4'h0;
 	else
-	if(done)	dcnt <= #1 4'h0;
-	else
-	if(ld)		dcnt <= #1 4'h1;
+	if(ld)		dcnt <= #1 4'hf;
 	else
 	if(go)		dcnt <= #1 dcnt + 4'h1;
+	else
+	if(kdone)	dcnt <= #1 4'h0;
 
 always @(posedge clk)	done <= #1 (dcnt==4'hb) & !ld;
 
 always @(posedge clk)
 	if(!rst)	go <= #1 1'b0;
 	else
-	if(ld)		go <= #1 1'b1;
+	if(ld | done)		go <= #1 1'b0;
 	else
-	if(done)	go <= #1 1'b0;
+	if(kdone)	go <= #1 1'b1;
 
 always @(posedge clk)	if(ld)	text_in_r <= #1 text_in;
 
-always @(posedge clk)	ld_r <= #1 ld;
+always @(posedge clk)	ld_r <= #1 !(|dcnt);
 
 ////////////////////////////////////////////////////////////////////
 //
